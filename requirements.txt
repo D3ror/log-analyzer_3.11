@@ -1,0 +1,13 @@
+regex==2025.8.15
+ua-parser==1.0.1
+user-agents==2.3.0
+polars==1.33.1
+pandas==2.2.2
+duckdb==1.10.1
+pyarrow==16.0.0
+tldextract==3.4.0
+plotly==6.2.1
+streamlit==1.49.0
+typer==0.9.0
+lxml==4.10.1
+psycopg2-binary==2.9.8
