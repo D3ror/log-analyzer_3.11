@@ -8,9 +8,9 @@ from app.ua import parse_ua, is_bot_ua
 from app.agg import hits_by_path, status_distribution, hits_over_time
 from lxml import etree
 
-st.set_page_config(page_title="Server Log Analyzer", layout="wide")
+st.set_page_config(page_title="Server log analyzer", layout="wide")
 
-st.title("📊 Server Log Analyzer & Crawl-Budget Insights")
+st.title(" Server log analyzer & crawl-budget insights")
 
 uploaded = st.file_uploader(
     "Upload a server log (.log / .gz / .txt)", type=["log", "gz", "txt"]
@@ -57,7 +57,7 @@ if uploaded:
     st.metric("Bot Requests", f"{bot_hits:,} ({pct_bots:.1f}%)")
 
     # Bot Activity
-    st.subheader("Bot Activity")
+    st.subheader("Bot activity")
     top_bots = (
         df.filter(pl.col("is_bot"))
         .group_by("bot_family")
@@ -68,7 +68,7 @@ if uploaded:
     st.dataframe(top_bots.to_pandas())
 
     # Top Paths with bot breakdown
-    st.subheader("Top Paths (with Bot Breakdown)")
+    st.subheader("Top paths (with bot breakdown)")
     top_paths = (
         df.filter(pl.col("is_bot"))
         .group_by(["path", "bot_family"])
@@ -85,7 +85,7 @@ if uploaded:
     st.plotly_chart(fig, use_container_width=True)
 
     # Traffic Over Time (stacked bots vs humans)
-    st.subheader("Traffic Over Time")
+    st.subheader("Traffic over time")
     times = (
         df.lazy()
         .with_columns([
@@ -126,7 +126,7 @@ if uploaded:
 
     # Orphan Detection (requires sitemap)
     if sitemap_file:
-        st.subheader("Orphan Detection")
+        st.subheader("Orphan detection")
         sitemap_urls = parse_sitemap(sitemap_file)
         sitemap_set = set(sitemap_urls)
         crawled_set = set(df["path"].unique())
@@ -141,7 +141,7 @@ if uploaded:
         st.write(list(missed)[:20])
 
     # Crawl Budget Optimization Insights
-    st.subheader("Crawl Budget Optimization Insights")
+    st.subheader("Crawl budget optimization insights")
     insights = []
     if bot_hits / total_hits > 0.7:
         insights.append("Bots account for most of the traffic — check if unnecessary bots should be blocked in robots.txt.")
