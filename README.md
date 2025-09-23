@@ -16,7 +16,6 @@ A demo web app built with Python 3.11 + Streamlit to analyze raw server logs for
 
 \- Visualizations (Streamlit + Plotly).
 
-\- CLI preprocessor for large logs → Parquet.
 
 
 
