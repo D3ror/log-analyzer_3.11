@@ -4,6 +4,7 @@ import gzip
 from datetime import datetime
 import polars as pl
 
+# Basic regex for Apache/Nginx combined log format
 LOG_RE = re.compile(
     r'(?P<remote_addr>\S+) \S+ (?P<remote_user>\S+) \[(?P<time_local>[^\]]+)\] '
     r'"(?P<request>[^"]*)" (?P<status>\d{3}) (?P<body_bytes_sent>\S+) '
@@ -28,12 +29,13 @@ def iter_lines(path: str):
             yield line
 
 
-def parse_file_to_parquet(in_path: str, out_parquet: str, batch_size: int = 50_000):
+def parse_file_to_parquet(in_path: str, out_prefix: str, batch_size: int = 50_000):
     """
-    Parse an Apache/Nginx log file into a Parquet file (streaming).
+    Parse a log file into one or more Parquet files.
+    Output: out_prefix-0.parquet, out_prefix-1.parquet, ...
     """
     batch = []
-    idx = 0
+    file_idx = 0
     for i, line in enumerate(iter_lines(in_path), 1):
         m = LOG_RE.match(line)
         if not m:
@@ -55,11 +57,13 @@ def parse_file_to_parquet(in_path: str, out_parquet: str, batch_size: int = 50_0
             "user_agent": d["http_user_agent"],
         }
         batch.append(row)
+
         if len(batch) >= batch_size:
             df = pl.DataFrame(batch)
-            df.write_parquet(out_parquet if idx == 0 else out_parquet, append=True)
+            df.write_parquet(f"{out_prefix}-{file_idx}.parquet")
             batch = []
-            idx += 1
+            file_idx += 1
+
     if batch:
         df = pl.DataFrame(batch)
-        df.write_parquet(out_parquet if idx == 0 else out_parquet, append=True)
+        df.write_parquet(f"{out_prefix}-{file_idx}.parquet")
